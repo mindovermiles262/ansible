@@ -1,0 +1,35 @@
+---
+# Installs Docker Community Edition on 'docker-nodes'
+# https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-18-04
+- hosts: docker-nodes
+  remote_user: user
+  become: true
+  tasks:
+          - name: Install prerequisites
+            apt:
+                    name: ['apt-transport-https', 'ca-certificates', 'curl', 'software-properties-common']
+                    state: present
+                    update_cache: yes 
+
+          - name: Add Docker's Official GPG Key
+            apt_key:
+                    url: https://download.docker.com/linux/ubuntu/gpg
+                    state: present
+
+          - name: Add Docker apt Repository
+            apt_repository:
+                    repo: deb https://download.docker.com/linux/ubuntu bionic stable
+                    state: present
+                    filename: docker
+
+          - name: Install Docker-CE
+            apt:
+                    name: docker-ce
+                    update_cache: yes
+                    state: present
+
+          - name: Enable Docker-CE
+            systemd:
+                    name: docker
+                    state: started
+                    enabled: yes
